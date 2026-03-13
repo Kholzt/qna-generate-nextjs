@@ -264,11 +264,11 @@ export default function Home() {
                                 // Header
                                 new DocxTableRow({
                                     children: [
-                                        new DocxTableCell({ children: [new Paragraph({ text: "NO", bold: true, alignment: AlignmentType.CENTER })], width: { size: 5, type: WidthType.PERCENTAGE } }),
-                                        new DocxTableCell({ children: [new Paragraph({ text: "CP / TP", bold: true, alignment: AlignmentType.CENTER })], width: { size: 30, type: WidthType.PERCENTAGE } }),
-                                        new DocxTableCell({ children: [new Paragraph({ text: "MATERI", bold: true, alignment: AlignmentType.CENTER })], width: { size: 20, type: WidthType.PERCENTAGE } }),
-                                        new DocxTableCell({ children: [new Paragraph({ text: "INDIKATOR", bold: true, alignment: AlignmentType.CENTER })], width: { size: 35, type: WidthType.PERCENTAGE } }),
-                                        new DocxTableCell({ children: [new Paragraph({ text: "LEVEL", bold: true, alignment: AlignmentType.CENTER })], width: { size: 10, type: WidthType.PERCENTAGE } }),
+                                        new DocxTableCell({ children: [new Paragraph({ children: [new TextRun({ text: "NO", bold: true })], alignment: AlignmentType.CENTER })], width: { size: 5, type: WidthType.PERCENTAGE } }),
+                                        new DocxTableCell({ children: [new Paragraph({ children: [new TextRun({ text: "CP / TP", bold: true })], alignment: AlignmentType.CENTER })], width: { size: 30, type: WidthType.PERCENTAGE } }),
+                                        new DocxTableCell({ children: [new Paragraph({ children: [new TextRun({ text: "MATERI", bold: true })], alignment: AlignmentType.CENTER })], width: { size: 20, type: WidthType.PERCENTAGE } }),
+                                        new DocxTableCell({ children: [new Paragraph({ children: [new TextRun({ text: "INDIKATOR", bold: true })], alignment: AlignmentType.CENTER })], width: { size: 35, type: WidthType.PERCENTAGE } }),
+                                        new DocxTableCell({ children: [new Paragraph({ children: [new TextRun({ text: "LEVEL", bold: true })], alignment: AlignmentType.CENTER })], width: { size: 10, type: WidthType.PERCENTAGE } }),
                                     ],
                                 }),
                                 // Data
@@ -278,7 +278,7 @@ export default function Home() {
                                             new DocxTableCell({ children: [new Paragraph({ text: (idx + 1).toString(), alignment: AlignmentType.CENTER })] }),
                                             new DocxTableCell({ children: [new Paragraph({ text: q.blueprint?.cp_tp || "-" })] }),
                                             new DocxTableCell({ children: [new Paragraph({ text: q.blueprint?.materi || "-" })] }),
-                                            new DocxTableCell({ children: [new Paragraph({ text: q.blueprint?.indikator || "-", italics: true })] }),
+                                            new DocxTableCell({ children: [new Paragraph({ children: [new TextRun({ text: q.blueprint?.indikator || "-", italics: true })] })] }),
                                             new DocxTableCell({ children: [new Paragraph({ text: q.blueprint?.level || "-", alignment: AlignmentType.CENTER })] }),
                                         ],
                                     })
@@ -663,7 +663,7 @@ export default function Home() {
                                                         <td className="px-6 py-6 align-top italic text-slate-600 leading-relaxed">{q.blueprint?.indikator}</td>
                                                         <td className="px-6 py-6 align-top">
                                                             <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 whitespace-nowrap">
-                                                                {q.blueprint?.level || "L2 (Aplikasi)"}
+                                                                {q.blueprint?.level || "-"}
                                                             </span>
                                                         </td>
                                                     </tr>

@@ -28,6 +28,11 @@ export async function POST(req: Request) {
       3. Gunakan bahasa Indonesia yang formal, baku, dan mudah dipahami sesuai usia jenjang.
       4. Komposisi 30% C1-C2, 50% C3, 20% C4 (Analisis). Seimbang untuk ujian sekolah.
       5. Sertakan "blueprint" (kisi-kisi) untuk setiap soal yang mencakup CP/TP, Materi, Indikator, dan Level Kognitif.
+      6. KHUSUS UNTUK KOLOM LEVEL di blueprint: Harus sesuai dengan tingkat kesulitan (${kesulitan}). 
+         - Jika Level Dasar: gunakan L1 (Pengetahuan/Pemahaman)
+         - Jika Level Standar: gunakan L2 (Aplikasi)
+         - Jika Level HOTS: gunakan L3 (Penalaran)
+         - Jika Lengkap C1-C6: sesuaikan dengan masing-masing soal (C1 s/d C6).
 
       Gunakan format JSON murni:
       {
@@ -41,8 +46,8 @@ export async function POST(req: Request) {
             "blueprint": {
               "cp_tp": "Capaian Pembelajaran atau Tujuan Pembelajaran yang sesuai",
               "materi": "Mata pelajaran/topik spesifik",
-              "indikator": "Indikator soal (contoh: Disajikan sebuah teks, siswa dapat menentukan...)",
-              "level": "Level Kognitif (contoh: L1, L2, L3 atau C1-C6)"
+              "indikator": "Indikator soal",
+              "level": "Isi dengan L1, L2, L3, atau C1-C6 sesuai poin 6 di atas"
             }
           }
         ]

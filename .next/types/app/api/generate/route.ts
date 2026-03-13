@@ -1,4 +1,4 @@
-// File: D:\MY PROJECT\ON GOING\2026-03\qna-generate\src\app\api\generate\route.ts
+// File: D:\MY PROJECT\ON GOING\2026-03\qna-generate-nextjs\src\app\api\generate\route.ts
 import * as entry from '../../../../../src/app/api/generate/route.js'
 import type { NextRequest } from 'next/server.js'
 
