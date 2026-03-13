@@ -10,8 +10,30 @@ import {
     Plus,
     GraduationCap,
     Calculator,
-    FileQuestion
+    FileQuestion,
+    Table,
+    FileDown,
+    Layout
 } from "lucide-react";
+import { saveAs } from "file-saver";
+import { 
+    Document, 
+    Packer, 
+    Paragraph, 
+    TextRun, 
+    Table as DocxTable, 
+    TableRow as DocxTableRow, 
+    TableCell as DocxTableCell, 
+    WidthType, 
+    BorderStyle,
+    AlignmentType,
+    HeadingLevel,
+    Header,
+    Footer,
+    PageNumber,
+    TextWrappingType,
+    TextWrappingSide
+} from "docx";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -87,6 +109,189 @@ export default function Home() {
             { label: "Pendidikan Agama Kristen", value: "Pendidikan Agama Kristen" },
             { label: "Lainnya (Tulis Manual)...", value: "custom" }
         ]
+    };
+
+    const handleExportDocx = async () => {
+        if (!result) return;
+        const finalMapel = mapel === "custom" ? customMapel : mapel;
+
+        const doc = new Document({
+            sections: [
+                {
+                    properties: {},
+                    children: [
+                        // Title
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "NASKAH SOAL",
+                                    bold: true,
+                                    size: 32,
+                                }),
+                            ],
+                            alignment: AlignmentType.CENTER,
+                            spacing: { after: 200 },
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: `${finalMapel} - Kelas ${kelas} ${jenjang}`,
+                                    bold: true,
+                                    size: 24,
+                                }),
+                            ],
+                            alignment: AlignmentType.CENTER,
+                            spacing: { after: 400 },
+                        }),
+
+                        // Questions
+                        ...result.flatMap((q: any, idx: number) => {
+                            const questionParas = [
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: `${idx + 1}. `,
+                                            bold: true,
+                                        }),
+                                        new TextRun({
+                                            text: q.question,
+                                        }),
+                                    ],
+                                    spacing: { before: 200, after: 100 },
+                                }),
+                            ];
+
+                            if (q.context) {
+                                questionParas.unshift(
+                                    new Paragraph({
+                                        children: [
+                                            new TextRun({
+                                                text: q.context,
+                                                italics: true,
+                                            }),
+                                        ],
+                                        spacing: { before: 200, after: 100 },
+                                        indent: { left: 360 },
+                                    })
+                                );
+                            }
+
+                            if (q.options) {
+                                q.options.forEach((opt: string, i: number) => {
+                                    const label = String.fromCharCode(65 + i);
+                                    questionParas.push(
+                                        new Paragraph({
+                                            children: [
+                                                new TextRun({
+                                                    text: `${label}. ${opt}`,
+                                                }),
+                                            ],
+                                            indent: { left: 720 },
+                                            spacing: { after: 50 },
+                                        })
+                                    );
+                                });
+                            }
+
+                            return questionParas;
+                        }),
+
+                        // Page Break for Answer Key
+                        new Paragraph({
+                            children: [new TextRun({ text: "", break: 1 })],
+                        }),
+
+                        // Answer Key Title
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "KUNCI JAWABAN DAN PEMBAHASAN",
+                                    bold: true,
+                                    size: 28,
+                                }),
+                            ],
+                            alignment: AlignmentType.CENTER,
+                            spacing: { before: 400, after: 200 },
+                        }),
+
+                        ...result.flatMap((q: any, idx: number) => [
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: `${idx + 1}. Jawaban: ${q.answer}`,
+                                        bold: true,
+                                    }),
+                                ],
+                                spacing: { before: 200, after: 50 },
+                            }),
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: `Pembahasan: ${q.explanation}`,
+                                        italics: true,
+                                    }),
+                                ],
+                                spacing: { after: 100 },
+                                indent: { left: 360 },
+                            }),
+                        ]),
+
+                        // Page Break for Blueprint
+                        new Paragraph({
+                            children: [new TextRun({ text: "", break: 1 })],
+                        }),
+
+                        // Blueprint Title
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "KISI-KISI PENULISAN SOAL",
+                                    bold: true,
+                                    size: 28,
+                                }),
+                            ],
+                            alignment: AlignmentType.CENTER,
+                            spacing: { before: 400, after: 400 },
+                        }),
+
+                        // Blueprint Table
+                        new DocxTable({
+                            width: {
+                                size: 100,
+                                type: WidthType.PERCENTAGE,
+                            },
+                            rows: [
+                                // Header
+                                new DocxTableRow({
+                                    children: [
+                                        new DocxTableCell({ children: [new Paragraph({ text: "NO", bold: true, alignment: AlignmentType.CENTER })], width: { size: 5, type: WidthType.PERCENTAGE } }),
+                                        new DocxTableCell({ children: [new Paragraph({ text: "CP / TP", bold: true, alignment: AlignmentType.CENTER })], width: { size: 30, type: WidthType.PERCENTAGE } }),
+                                        new DocxTableCell({ children: [new Paragraph({ text: "MATERI", bold: true, alignment: AlignmentType.CENTER })], width: { size: 20, type: WidthType.PERCENTAGE } }),
+                                        new DocxTableCell({ children: [new Paragraph({ text: "INDIKATOR", bold: true, alignment: AlignmentType.CENTER })], width: { size: 35, type: WidthType.PERCENTAGE } }),
+                                        new DocxTableCell({ children: [new Paragraph({ text: "LEVEL", bold: true, alignment: AlignmentType.CENTER })], width: { size: 10, type: WidthType.PERCENTAGE } }),
+                                    ],
+                                }),
+                                // Data
+                                ...result.map((q: any, idx: number) => (
+                                    new DocxTableRow({
+                                        children: [
+                                            new DocxTableCell({ children: [new Paragraph({ text: (idx + 1).toString(), alignment: AlignmentType.CENTER })] }),
+                                            new DocxTableCell({ children: [new Paragraph({ text: q.blueprint?.cp_tp || "-" })] }),
+                                            new DocxTableCell({ children: [new Paragraph({ text: q.blueprint?.materi || "-" })] }),
+                                            new DocxTableCell({ children: [new Paragraph({ text: q.blueprint?.indikator || "-", italics: true })] }),
+                                            new DocxTableCell({ children: [new Paragraph({ text: q.blueprint?.level || "-", alignment: AlignmentType.CENTER })] }),
+                                        ],
+                                    })
+                                )),
+                            ],
+                        }),
+                    ],
+                },
+            ],
+        });
+
+        const blob = await Packer.toBlob(doc);
+        saveAs(blob, `Soal_${finalMapel || "Generate"}.docx`);
     };
 
     const handleGenerate = async () => {
@@ -339,12 +544,20 @@ export default function Home() {
                                             {mapel} • Kelas {kelas} {jenjang}
                                         </p>
                                     </div>
-                                    <button
-                                        onClick={() => window.print()}
-                                        className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100 transition-colors flex items-center gap-2"
-                                    >
-                                        <ClipboardCheck className="w-4 h-4" /> Cetak / PDF
-                                    </button>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={handleExportDocx}
+                                            className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-sm transition-all flex items-center gap-2"
+                                        >
+                                            <FileDown className="w-4 h-4" /> Export ke Word (.docs)
+                                        </button>
+                                        <button
+                                            onClick={() => window.print()}
+                                            className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100 transition-colors flex items-center gap-2"
+                                        >
+                                            <ClipboardCheck className="w-4 h-4" /> Cetak / PDF
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="space-y-12">
                                     {result.map((q: any, idx: number) => (
@@ -418,6 +631,47 @@ export default function Home() {
                                         ))}
                                     </div>
                                 </div>
+
+                                {/* Kisi-Kisi Penulisan Soal Section */}
+                                <div id="blueprint-section" className="mt-20 pt-10 border-t-2 border-dashed border-slate-100 animate-in fade-in slide-in-from-bottom-8 duration-700 pb-20">
+                                    <div className="flex items-center gap-3 mb-8 bg-slate-900 p-4 rounded-2xl text-white shadow-lg">
+                                        <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+                                            <Layout className="w-5 h-5 text-white" />
+                                        </div>
+                                        <h2 className="text-xl font-bold tracking-tight">Kisi-Kisi Penulisan Soal</h2>
+                                    </div>
+
+                                    <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm bg-white">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead className="bg-slate-50 text-slate-500 text-[10px] font-bold uppercase tracking-wider border-b">
+                                                <tr>
+                                                    <th className="px-6 py-4">NO</th>
+                                                    <th className="px-6 py-4">CP / TP</th>
+                                                    <th className="px-6 py-4">MATERI</th>
+                                                    <th className="px-6 py-4">INDIKATOR</th>
+                                                    <th className="px-6 py-4">LEVEL</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="text-[13px] text-slate-700 divide-y divide-slate-100">
+                                                {result.map((q: any, idx: number) => (
+                                                    <tr key={idx} className="hover:bg-indigo-50/30 transition-colors group">
+                                                        <td className="px-6 py-6 align-top font-black text-slate-400 group-hover:text-indigo-600">{idx + 1}</td>
+                                                        <td className="px-6 py-6 align-top max-w-xs">
+                                                            <p className="text-indigo-600 font-bold leading-tight mb-2">{q.blueprint?.cp_tp}</p>
+                                                        </td>
+                                                        <td className="px-6 py-6 align-top font-medium">{q.blueprint?.materi}</td>
+                                                        <td className="px-6 py-6 align-top italic text-slate-600 leading-relaxed">{q.blueprint?.indikator}</td>
+                                                        <td className="px-6 py-6 align-top">
+                                                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 whitespace-nowrap">
+                                                                {q.blueprint?.level || "L2 (Aplikasi)"}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -434,7 +688,7 @@ export default function Home() {
 
             <style jsx global>{`
                 @media print {
-                  header, .lg\:col-span-4, footer, button, .text-green-700 {
+                  header, .lg\:col-span-4, footer, button, .text-green-700, .bg-indigo-600, .bg-indigo-50 {
                     display: none !important;
                   }
                   .lg\:col-span-8 {
@@ -450,11 +704,16 @@ export default function Home() {
                     padding-left: 2.5rem !important;
                     margin-bottom: 2rem !important;
                   }
-                  #answer-key-section {
+                  #answer-key-section, #blueprint-section {
                     break-before: page;
                     margin-top: 0 !important;
                     padding-top: 0 !important;
                     border-top: none !important;
+                  }
+                  .bg-slate-900 {
+                    background-color: #0f172a !important;
+                    color: white !important;
+                    -webkit-print-color-adjust: exact;
                   }
                 }
             `}</style>

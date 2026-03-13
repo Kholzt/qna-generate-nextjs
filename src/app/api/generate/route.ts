@@ -27,6 +27,8 @@ export async function POST(req: Request) {
       2. Untuk tipe PG, berikan 4 opsi (A, B, C, D) yang mengecoh namun logis.
       3. Gunakan bahasa Indonesia yang formal, baku, dan mudah dipahami sesuai usia jenjang.
       4. Komposisi 30% C1-C2, 50% C3, 20% C4 (Analisis). Seimbang untuk ujian sekolah.
+      5. Sertakan "blueprint" (kisi-kisi) untuk setiap soal yang mencakup CP/TP, Materi, Indikator, dan Level Kognitif.
+
       Gunakan format JSON murni:
       {
         "questions": [
@@ -35,7 +37,13 @@ export async function POST(req: Request) {
             "question": "teks pertanyaan di sini",
             "options": ["opsi A", "opsi B", "opsi C", "opsi D"],
             "answer": "jawaban yang benar",
-            "explanation": "pembahasan singkat terkait jawaban tersebut"
+            "explanation": "pembahasan singkat terkait jawaban tersebut",
+            "blueprint": {
+              "cp_tp": "Capaian Pembelajaran atau Tujuan Pembelajaran yang sesuai",
+              "materi": "Mata pelajaran/topik spesifik",
+              "indikator": "Indikator soal (contoh: Disajikan sebuah teks, siswa dapat menentukan...)",
+              "level": "Level Kognitif (contoh: L1, L2, L3 atau C1-C6)"
+            }
           }
         ]
       }
